@@ -34,47 +34,6 @@ This project reformulates the recommendation task as a 12-arm contextual bandit 
 
 Rewards are generated via a stochastic sampler to simulate real-world engagement noise.
 
-## Dataset Description
-
-### News Dataset
-
-- **Total articles:** 208,083
-- **Original categories:** 42 (HuffPost categories)
-- **Mapped to 4 target categories:**
-  - Education (7 original categories)
-  - Crime (2 categories)
-  - Technology (3 categories)
-  - Entertainment (30 categories)
-
-**Category distribution:**
-
-- Entertainment ≈ 73%
-- Education ≈ 20%
-- Technology ≈ 5%
-- Crime ≈ 3%
-
-This imbalance reflects realistic content distributions in media platforms.
-
-## Feature Engineering
-
-### User Features
-
-- Age (missing values handled via median imputation)
-- Browser version
-- Region code
-- Subscription status
-
-### Preprocessing Steps
-
-- Label encoding for categorical variables
-- Combined vocabulary fitting to avoid train-test mismatch
-- 80-20 stratified train-validation split
-
-**Dataset sizes:**
-
-- 2,000 labeled users (training)
-- 2,000 unlabeled users (test)
-
 ## Context Classification
 
 Three models were evaluated:
@@ -85,9 +44,9 @@ Three models were evaluated:
 
 **Validation accuracy:**
 
-- Random Forest: 78–82%
-- Gradient Boosting: 75–78%
-- Logistic Regression: 68–72%
+- Random Forest: 89%
+- Gradient Boosting: 90%
+- Logistic Regression: 87%
 
 **Random Forest was selected due to:**
 
@@ -110,7 +69,7 @@ Three models were evaluated:
 Tuning was performed over 10,000 steps.
 
 - **Epsilon-Greedy:** ε ∈ {0.01, 0.05, 0.1}
-- **UCB:** exploration coefficient ∈ {0.5, 1.0, 3.0}
+- **UCB:** exploration coefficient ∈ {0.5, 1.0, 2.0}
 - **SoftMax:** τ = 1.0
 
 ### Results
@@ -120,17 +79,6 @@ Tuning was performed over 10,000 steps.
 - Very low exploration caused premature convergence
 - Very high exploration reduced cumulative reward
 - **UCB was selected for final deployment**
-
-## Arm-Level Reward Learning
-
-The system learned differentiated rewards across the 12 arms:
-
-- Some arms achieved strong positive average rewards (6–9 range)
-- Some arms were consistently negative (-1 to -7)
-- Some were near zero (uncertain or weak preference)
-- The algorithm naturally concentrated recommendations on high-performing arms while maintaining minimal exploration
-
-This confirms successful learning of context-specific reward structure.
 
 ## End-to-End Recommendation Pipeline
 
@@ -152,7 +100,7 @@ For each test user:
 
 ### Classification
 
-- ~80% validation accuracy
+- ~90% validation accuracy
 
 ### Bandit Performance
 
@@ -160,45 +108,6 @@ For each test user:
 - Clear context-dependent policy differentiation
 - Balanced exploration-exploitation tradeoff
 
-### Efficiency
-
-- Constant-time arm selection
-- Minimal computation overhead
-- Suitable for real-time applications
-
-## Baseline Comparisons
-
-Compared to:
-
-### Random Policy
-- Achieves average corpus reward
-- Significantly underperforms learned policies
-
-### Global Greedy Policy (Context-Agnostic)
-- Ignores user segmentation
-- Misses context-specific optimal arms
-
-### Content-Based Filtering
-- Requires heavy feature engineering
-- Does not inherently manage exploration
-
-**Contextual bandits provide superior structured learning under uncertainty.**
-
-## Limitations
-
-- Offline evaluation using simulated rewards (no real user feedback)
-- Imperfect context classification affects recommendation accuracy
-- Static context assumption (no drift adaptation)
-- Small action space (12 arms)
-- Single-objective reward (engagement only)
-
-## Future Improvements
-
-- Online A/B testing with real users
-- Scalable contextual linear or neural bandits
-- Multi-objective optimization (diversity, revenue, fairness)
-- Drift-aware retraining mechanisms
-- Diversity-constrained recommendation policies
 
 ## Key Takeaways
 
@@ -207,9 +116,3 @@ Compared to:
 - UCB provides efficient uncertainty-based exploration
 - Contextual bandits bridge supervised learning and reinforcement learning
 - Learned policies are interpretable and computationally efficient
-
-## Conclusion
-
-This project demonstrates a complete, modular implementation of a contextual multi-armed bandit recommendation system. By integrating supervised context classification with reinforcement learning-based decision-making, the system successfully learns personalized, context-dependent policies under uncertainty.
-
-The implementation provides a strong foundation for scaling toward production-grade adaptive recommendation systems.
